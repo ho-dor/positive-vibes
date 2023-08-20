@@ -13,22 +13,20 @@ import {
 import { Dispatch, SetStateAction, useState } from "react";
 import { isThePostPositive } from "../lib/utils";
 import { useToast } from "@/components/ui/use-toast";
+import { fetchData, insertData } from "@/db/client";
 
-export function AddPost({
-  setPosts,
-  posts,
-}: {
-  setPosts: Dispatch<SetStateAction<string[]>>;
-  posts: string[];
-}) {
+export function AddPost() {
   const [post, setPost] = useState<string>("");
   const { toast } = useToast();
 
-  const reviewPost = () => {
+  const reviewPost = async () => {
     if (isThePostPositive(post)) {
-      const currentPosts = [...posts];
-      currentPosts.push(post);
-      setPosts(currentPosts);
+      await insertData(post);
+
+      toast({
+        title: "Posted",
+        description: "Your post is successfully posted",
+      });
     } else {
       toast({
         title: "Uh oh!!",
@@ -36,7 +34,6 @@ export function AddPost({
           "Your post doesn't meet our guidelines right now. If it is a mistake, contact us.",
       });
     }
-    console.log(isThePostPositive(post));
     setPost("");
   };
   return (
