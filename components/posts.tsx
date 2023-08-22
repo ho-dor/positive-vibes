@@ -4,12 +4,13 @@ import { Post } from "./post";
 import { fetchData } from "../db/client";
 import { useEffect, useState } from "react";
 import { supabase } from "../db/client";
+import { SetStateAction } from "react";
 
 export const Posts = () => {
   const [posts, setPosts] = useState<[{ post: string }]>([{ post: "" }]);
   useEffect(() => {
     fetchData()
-      .then((res) => setPosts(res.data))
+      .then((res) => setPosts(res.data as SetStateAction<[{ post: string }]>))
       .catch((error) => console.log(error));
     supabase
       .channel("schema-table-changes")
@@ -22,9 +23,9 @@ export const Posts = () => {
         },
         async () => {
           try {
-            setPosts([]);
+            setPosts([] as unknown as SetStateAction<[{ post: string }]>);
             const res = await fetchData();
-            return setPosts(res.data);
+            return setPosts(res.data as SetStateAction<[{ post: string }]>);
           } catch (error) {
             return console.log(error);
           }
